@@ -6,9 +6,7 @@ charactersAPI.getFullList();
   });
 
   $('#fetch-one').on('click', (e) => {
-charactersAPI.getOneRegister($('#findID').val());
-console.log('val')
-console.log($('#findID').val())
+charactersAPI.getOneRegister($('#searchByID').val());
   });
 
   $('#delete-one').on('click', (e) => {
@@ -51,5 +49,21 @@ charactersAPI.createOneRegister(name,occupation,debt,weapon);
     }
 charactersAPI.updateOneRegister(one,name,occupation,debt,weapon);
   });
+
+  function cleanInput() {
+    $('#findID').val('');
+    $('#name').val('');
+    $('#occupation').val('');
+    $('#weapon').val('');
+    $('#debt').val('');
+    $('#editID').val('');
+    $('#edit-name').val('');
+    $('#edit-occupation').val('');
+    $('#edit-weapon').val('');
+    $('#edit-debt').val('');
+    $('#deleteOne').val('');
+    $('.id',".name").val('');
+
+  }
 
 });
