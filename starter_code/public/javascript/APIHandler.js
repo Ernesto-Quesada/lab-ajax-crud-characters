@@ -1,107 +1,124 @@
-function showFeedback(postResponse) {
-    console.log('Oh YES works');
-    console.log(postResponse);
-    var counter = 0;
-    if (postResponse.length > 0) {
-        postResponse.forEach((char) => {
-            counter++;
-            console.log(counter);
-            var info;
-if (counter === 1) {
-   info = 'characterinfo';
-   $('.name').append(`<label>  ${char.name}</label>`);
-   $('.occupation').append(`<label>  ${char.occupation}</label>`);
-   $('.debt').append(`<label>  ${char.debt}</label>`);
-   $('.weapon').append(`<label>  ${char.weapon}</label>`);
-   $('.id').append(`<label>  ${char.id}</label>`);
-}else {
-   info = 'characterinfo'+counter;
-   $('.characters-container').append(`<div class= ${info}></div>`);
-   $(`.${info}`).append(`<label class="name">Character Name:<label>  ${char.name}</label></label><br>`);
-   $(`.${info}`).append(`<label class="occupation">Character Occupation:<label>  ${char.occupation}</label></label><br>`);
-   $(`.${info}`).append(`<label class="debt">Character Debt:<label>  ${char.debt}</label></label><br>`);
-   $(`.${info}`).append(`<label class="weapon">Character Weapon:<label>  ${char.weapon}</label></label><br>`);
-   $(`.${info}`).append(`<label class="id">ID:<label>  ${char.id}</label></label><br>`);
-}
-
-
-        });
-    } else {
-        $('.name').append(`<label>  ${postResponse.name}</label>`);
-        $('.occupation').append(`<label>  ${postResponse.occupation}</label>`);
-        $('.debt').append(`<label>  ${postResponse.debt}</label>`);
-        $('.weapon').append(`<label>  ${postResponse.weapon}</label>`);
-        $('.id').append(`<label>  ${postResponse.id}</label>`);
-    }
-}
-
-function handleError(err) {
-    console.log('Oh no! Error:');
-    console.log(err);
-}
-
 class APIHandler {
-    constructor(baseUrl) {
-        this.BASE_URL = baseUrl;
-    }
+  constructor (baseUrl) {
+    this.BASE_URL = baseUrl;
+  }
+
+  getFullList () {
+      $.ajax({
+        method: "GET",
+        url: "http://ih-api.herokuapp.com/characters",
+        success: function (response) {
+        console.log('answer from API',response);
+
+          response.forEach( (response) => {
+            var characterInfo =
+             '<div class="character-info">' +
+             '<div class="name"> Name: ' + response.name + '</div>'+
+             '<div class="occupation"> Occupation: '+response.occupation+'</div>'+
+             '<div class="debt"> Debt: '+response.debt+'</div>'+
+             '<div class="weapon"> Weapon: '+response.weapon+'</div>'+
+             '<div class="id"> Id: '+ response.id+'</div>'+
+             '</div>';
+           $(characterInfo).appendTo('.characters-container');
+       });
+     },
+
+        error: function (err) {
+          console.log("Not Working");
+        },
+      });
+  }
+
+  getOneRegister (id) {
+    $.ajax({
+      method: "GET",
+      dataType: 'json',
+      url: "http://ih-api.herokuapp.com/characters/" + id,
+      success: function (response) {
+        console.log(response);
+        $("div.character-info").first().remove();
+          var characterInfo =
+           '<div class="character-info">' +
+           '<div class="name"> Name: ' + response.name + '</div>'+
+           '<div class="occupation"> Occupation: '+response.occupation+'</div>'+
+           '<div class="debt"> Debt: '+response.debt+'</div>'+
+           '<div class="weapon"> Weapon: '+response.weapon+'</div>'+
+           '<div class="id"> Id: '+response.id+'</div>'+
+           '</div>';
+           console.log(characterInfo);
+         $(characterInfo).appendTo('.characters-container');
 
 
-    getFullList() {
-        $.ajax({
-            method: 'GET',
-            url: 'http://ih-api.herokuapp.com/characters',
-            success: showFeedback,
-            error: handleError
-        });
-    }
+   },
 
-    getOneRegister(one) {
-        $.ajax({
-            method: 'GET',
-            url: `http://ih-api.herokuapp.com/characters/${one}`,
-            success: showFeedback,
-            error: handleError
-        });
-    }
+      error: function (err) {
+          console.log("Not Working");
 
-    createOneRegister(nam, occu, deb, weap) {
 
-        const char = {
-            name: nam,
-            occupation: occu,
-            debt: deb,
-            weapon: weap
-        };
-        $.ajax({
-            method: 'POST',
-            url: 'http://ih-api.herokuapp.com/characters',
-            data: char,
-            success: showFeedback,
-            error: handleError
-        });
-    }
+      },
+    });
+  }
 
-    updateOneRegister(one, nam, occu, deb, weap) {
-        $.ajax({
-            method: 'PATCH',
-            url: `http://ih-api.herokuapp.com/characters/${one}`,
-            data: {
-                name: nam,
-                occupation: occu,
-                debt: deb,
-                weapon: weap
-            },
-            success: showFeedback,
-            error: handleError
-        });
-    }
+  createOneRegister (characterInfo) {
+    $.ajax({
+      method: 'POST',
+      url: this.BASE_URL + "/characters",
+      data: characterInfo,
+      success: function (response) {
+        $("div.character-info").remove();
+        var characterInfo =
+          '<div class="character-info">' +
+          '<div class="name"> Name:' + response.name + '</div>'+
+          '<div class="occupation"> Occupation:'+response.occupation+'</div>'+
+          '<div class="debt"> Debt:'+response.debt+'</div>'+
+          '<div class="weapon"> Weapon:'+response.weapon+'</div>'+
+          '<div class="id"> Id: '+response.id+'</div>'+
+          '</div>';
+        $(characterInfo).appendTo('.characters-container');
+      },
+      error: function (response) {
+          console.log("Not Working");
+      }
+    });
+  }
 
-    deleteOneRegister(one) {
-        $.ajax({
-            method: 'DELETE',
-            url: `http://ih-api.herokuapp.com/characters/${one}`,
-            success: showFeedback,
-            error: handleError
-        });
-    }
+  updateOneRegister (characterInfo, id) {
+    $.ajax({
+      dataType: 'json',
+      method: 'PATCH',
+      url: this.BASE_URL + "/characters/" + id,
+      data: characterInfo,
+      success: function (response) {
+        $("div.character-info").remove();
+        var characterInfo =
+          '<div class="character-info">' +
+          '<div class="name"> Name:' + response.name + '</div>'+
+          '<div class="occupation"> Occupation:'+response.occupation+'</div>'+
+          '<div class="debt"> Debt:'+response.debt+'</div>'+
+          '<div class="weapon"> Weapon:'+response.weapon+'</div>'+
+          '<div class="id"> Id: '+response.id+'</div>'+
+          '</div>';
+        $(characterInfo).appendTo('.characters-container');
+
+      },
+      error: function (response) {
+          console.log("Not Working");
+
+      }
+    });
+
+  }
+  deleteOneRegister (id) {
+    $.ajax({
+      method: 'DELETE',
+      url: this.BASE_URL + "/characters/" + id,
+      success: function (response) {
+        console.log(this.url);
+      },
+      error: function (response) {
+          console.log("Not Working");
+
+      }
+    });
+  }
 }

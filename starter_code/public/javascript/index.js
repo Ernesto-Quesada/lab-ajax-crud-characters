@@ -1,69 +1,68 @@
 const charactersAPI = new APIHandler("http://ih-api.herokuapp.com");
 
 $(document).ready( () => {
+
+//========Get All characters=========
   $('#fetch-all').on('click', (e) => {
-charactersAPI.getFullList();
+    $('.characters-container').children().remove();
+    charactersAPI.getFullList();
   });
 
+//======Get only ONE by ID chararacter=====
   $('#fetch-one').on('click', (e) => {
-charactersAPI.getOneRegister($('#searchByID').val());
+    $('.characters-container').children().remove();
+    let id = $('input[name="character-id"]').val();
+      charactersAPI.getOneRegister(id);
   });
 
-  $('#delete-one').on('click', (e) => {
-    charactersAPI.deleteOneRegister($('#deleteOne').val());
-  });
-
-
-
-  // ===============================================================
+//=====New character========
   $('#new-character-form').on('submit', (e) => {
-    event.preventDefault();
-var
-name = $('#name').val(),
-occupation = $('#occupation').val(),
-debt ,
-weapon = $('#weapon').val();
-
-if( $('#debt').prop("checked",true)){
-  debt = true;
-}else {
-  debt = false;
-}
-console.log(name,occupation,debt,weapon);
-charactersAPI.createOneRegister(name,occupation,debt,weapon);
+      e.preventDefault();
+      var checkBox;
+      if ($('input[name="debt"]').is(':checked')) {
+         checkBox = true;
+      } else {
+         checkBox = false;
+      }
+      const characterInfo = {
+         name: $('input[name="name"]').val(),
+         occupation: $('input[name="occupation"]').val(),
+         debt: checkBox,
+         weapon: $('input[name="weapon"]').val()
+      };
+      console.log(characterInfo);
+      charactersAPI.createOneRegister(characterInfo);
   });
 
+//=========EDITION==========
   $('#edit-character-form').on('submit', (e) => {
-    event.preventDefault();
+    e.preventDefault();
+    var id = $('input[name="chr-id"]').val();
 
-    var
-    one = $('#updateOne').val(),
-    name = $('#edit-name').val(),
-    occupation = $('#edit-occupation').val(),
-    debt ,
-    weapon = $('#edit-weapon').val();
-    if( $('#edit-debt').prop("checked",true)){
-      debt = true;
-    }else {
-      debt = false;
+    var CheckBox;
+    if ($('#edit-character-form').find('input[name="debt"]').is(':checked')) {
+       CheckBox = true;
+    } else {
+       CheckBox = false;
     }
-charactersAPI.updateOneRegister(one,name,occupation,debt,weapon);
+    const characterInfo = {
+       name: $('#edit-character-form').find('input[name="name"]').val(),
+      //  name: $('input[name="name"]').val(),
+       occupation: $('#edit-character-form').find('input[name="occupation"]').val(),
+       debt: CheckBox,
+       weapon: $('#edit-character-form').find('input[name="weapon"]').val()
+    };
+    charactersAPI.updateOneRegister(characterInfo, id);
   });
 
-  function cleanInput() {
-    $('#findID').val('');
-    $('#name').val('');
-    $('#occupation').val('');
-    $('#weapon').val('');
-    $('#debt').val('');
-    $('#editID').val('');
-    $('#edit-name').val('');
-    $('#edit-occupation').val('');
-    $('#edit-weapon').val('');
-    $('#edit-debt').val('');
-    $('#deleteOne').val('');
-    $('.id',".name").val('');
+//==========Delete a character=========
+  $('#delete-one').on('click', (e) => {
+    $('.characters-container').children().remove();
+    let id = $('input[name="character-id-delete"]').val();
+    charactersAPI.deleteOneRegister(id);
+  });
 
-  }
+
+
 
 });
